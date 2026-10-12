@@ -148,6 +148,21 @@
 
 ## 실행 방법
 
+### 최신판 `seoul_er_dispatch_map_9.html` (실시간 병상으로 시작, 2026-10-12, 12차)
+
+1. 이 저장소의 **`master` 브랜치**를 받습니다 (`main`에는 시뮬레이션 파일이 없습니다):
+   `git clone -b master https://github.com/suyeonh-ac/emergency_simulator.git`
+2. [Node.js](https://nodejs.org) 18 이상을 설치합니다.
+3. 저장소 폴더의 **`시뮬레이션_실행.bat`** 을 더블클릭합니다.
+   - 처음 한 번은 data.go.kr E-Gen 인증키(일반 인증키 Encoding)를 묻습니다. 팀 키는 GitHub에 올리지 않으므로
+     팀 대화방에서 따로 받거나 본인 키를 넣으세요. 키는 그 컴퓨터의 `seoul_er_simulation/.env.local` 에만 저장됩니다.
+   - 서버가 뜨면 브라우저에서 http://localhost:8787 이 열리고, 지금 서울 응급실 병상으로 시뮬레이션이 시작됩니다.
+   - Mac/Linux: `cd seoul_er_simulation && node scripts/8_live_server.js` 후 http://localhost:8787 을 엽니다.
+4. 키를 넣지 않거나 서버 없이 HTML을 직접 열면 저장된 병상 기록(2026-10-07 15:03)으로 시작합니다.
+   이 경우 화면의 빨간 "불러오기 실패" 문구는 정상입니다.
+
+### 이전 판
+
 `index.html`을 더블클릭해서 브라우저로 열면 됩니다. 로컬 서버 없이 바로 동작합니다
 (데이터를 `fetch`가 아니라 `<script src="...">`로 불러오는 방식이라 `file://`로 열어도
 CORS 문제가 없습니다). 지도 타일(Esri 다크 캔버스)·Leaflet 라이브러리·폰트는 여는 시점에

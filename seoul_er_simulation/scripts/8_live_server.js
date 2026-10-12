@@ -87,7 +87,7 @@ let cache = null; // {at, body}
 async function fetchEgen() {
   if (cache && Date.now() - cache.at < CACHE_MS) return Object.assign({}, cache.body, { cached: true });
   const key = getKey();
-  if (!key) throw new Error('인증키가 없습니다. seoul_er_simulation/.env.local 에 EGEN_SERVICE_KEY=... 를 넣거나 환경변수로 주고 서버를 다시 실행하세요.');
+  if (!key) throw new Error('인증키가 없습니다. 서버 창을 닫고 "시뮬레이션_실행.bat"을 다시 실행해 키를 넣거나, seoul_er_simulation/.env.local 에 EGEN_SERVICE_KEY=... 를 넣으세요.');
   const all = [];
   let page = 1, total = Infinity;
   while (all.length < total && page <= 5) {
@@ -166,8 +166,33 @@ if (!fs.existsSync(HTML)) {
   console.error(`HTML 파일이 없습니다: ${HTML}\n  node scripts/8_live_server.js <HTML 경로> 로 지정하세요.`);
   process.exit(1);
 }
-server.listen(PORT, '127.0.0.1', () => {
+// 키가 없고 터미널에서 실행했으면(팀원 PC에서 처음 실행 등) 한 번 물어보고 .env.local 에 저장한다.
+// .env.local 은 .gitignore 대상이라 GitHub에 올라가지 않는다.
+function askKeyIfMissing() {
+  if (getKey() || !process.stdin.isTTY) return Promise.resolve();
+  const rl = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+  console.log('\n[처음 한 번만] data.go.kr E-Gen 인증키(일반 인증키 Encoding)를 붙여넣고 Enter.');
+  console.log('  이 컴퓨터의 seoul_er_simulation/.env.local 에만 저장되고 GitHub에는 올라가지 않습니다.');
+  console.log('  그냥 Enter를 누르면 키 없이 저장된 병상 기록으로 시작합니다.');
+  return new Promise((resolve) => rl.question('인증키: ', (ans) => {
+    rl.close();
+    const k = ans.trim().replace(/^"|"$/g, '');
+    if (k) {
+      fs.writeFileSync(path.join(ROOT, '.env.local'), `EGEN_SERVICE_KEY=${k}\n`, 'utf8');
+      console.log('저장했습니다. 키를 바꾸려면 seoul_er_simulation/.env.local 을 지우고 다시 실행하세요.\n');
+    }
+    resolve();
+  }));
+}
+
+askKeyIfMissing().then(() => server.listen(PORT, '127.0.0.1', () => {
   console.log(`시뮬레이션: http://localhost:${PORT}  (${path.relative(process.cwd(), HTML)})`);
   console.log(getKey() ? '인증키 확인됨 — 화면을 열면 실시간 병상을 불러옵니다.' : '주의: 인증키(.env.local 또는 EGEN_SERVICE_KEY)가 없어 실시간 조회는 실패합니다(고정 스냅샷은 그대로 사용 가능).');
   console.log('끝내려면 Ctrl+C');
-});
+  // 시뮬레이션_실행.bat 이 OPEN_BROWSER=1 을 주면 서버가 뜬 뒤 브라우저를 연다
+  if (process.env.OPEN_BROWSER === '1') {
+    const url = `http://localhost:${PORT}`;
+    const cmd = process.platform === 'win32' ? `start "" ${url}` : process.platform === 'darwin' ? `open ${url}` : `xdg-open ${url}`;
+    require('child_process').exec(cmd);
+  }
+}));
