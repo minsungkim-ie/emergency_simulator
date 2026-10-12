@@ -150,8 +150,8 @@
 
 ### 최신판 `seoul_er_dispatch_map_9.html` (실시간 병상으로 시작, 2026-10-12, 12차)
 
-1. 이 저장소의 **`master` 브랜치**를 받습니다 (`main`에는 시뮬레이션 파일이 없습니다):
-   `git clone -b master https://github.com/suyeonh-ac/emergency_simulator.git`
+1. 이 저장소를 받습니다 (기본 브랜치 `main`):
+   `git clone https://github.com/suyeonh-ac/emergency_simulator.git`
 2. [Node.js](https://nodejs.org) 18 이상을 설치합니다.
 3. 저장소 폴더의 **`시뮬레이션_실행.bat`** 을 더블클릭합니다.
    - 처음 한 번은 data.go.kr E-Gen 인증키(일반 인증키 Encoding)를 묻습니다. 팀 키는 GitHub에 올리지 않으므로
@@ -169,10 +169,7 @@
 1. https://vercel.com 에 GitHub 계정으로 로그인 → **Add New → Project** → `emergency_simulator` 저장소 **Import**.
 2. Framework Preset은 **Other** 그대로, 빌드 설정은 비워 둡니다.
 3. **Environment Variables**에 `EGEN_SERVICE_KEY` = 일반 인증키(Encoding)를 넣고 **Deploy**.
-4. 저장소 기본 브랜치가 `main`이라 첫 배포는 `main`(시뮬레이션 없음)으로 나갑니다.
-   **Settings → Environments → Production → Branch Tracking**을 `master`로 바꾼 뒤, `master`에 새 커밋을
-   push하면(빈 커밋도 됨: `git commit --allow-empty -m "deploy" && git push origin master`) 시뮬레이션이 배포됩니다.
-5. 나온 `https://<프로젝트>.vercel.app` 링크를 공유합니다. 이후 `master`에 push하면 자동으로 다시 배포됩니다.
+4. 나온 `https://<프로젝트>.vercel.app` 링크를 공유합니다. 이후 `main`에 push하면 자동으로 다시 배포됩니다.
 
 - 함수는 서울 리전(`icn1`)에서 실행되고, 결과를 3분(`s-maxage=180`) 동안 CDN이 재사용해 data.go.kr 일일 호출 한도를 지킵니다.
   바꾸려면 환경변수 `EGEN_CACHE_SEC`.
