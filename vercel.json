@@ -1,0 +1,9 @@
+{
+  "regions": ["icn1"],
+  "rewrites": [
+    { "source": "/", "destination": "/seoul_er_dispatch_map_9.html" }
+  ],
+  "functions": {
+    "api/egen-live.js": { "maxDuration": 30 }
+  }
+}

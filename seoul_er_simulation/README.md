@@ -161,6 +161,24 @@
 4. 키를 넣지 않거나 서버 없이 HTML을 직접 열면 저장된 병상 기록(2026-10-07 15:03)으로 시작합니다.
    이 경우 화면의 빨간 "불러오기 실패" 문구는 정상입니다.
 
+### 웹 배포 (Vercel) — 링크만 열면 누구나 실시간 병상으로 시작
+
+저장소 루트의 `vercel.json`·`api/egen-live.js`가 배포판입니다. 페이지는 `seoul_er_dispatch_map_9.html` 그대로이고,
+같은 주소의 `/api/egen-live`가 키를 들고 E-Gen을 대신 호출합니다(로컬 서버와 조회 코드 `api/_lib/egen.js`를 같이 씀).
+
+1. https://vercel.com 에 GitHub 계정으로 로그인 → **Add New → Project** → `emergency_simulator` 저장소 **Import**.
+2. Framework Preset은 **Other** 그대로, 빌드 설정은 비워 둡니다.
+3. **Environment Variables**에 `EGEN_SERVICE_KEY` = 일반 인증키(Encoding)를 넣고 **Deploy**.
+4. 저장소 기본 브랜치가 `main`이라 첫 배포는 `main`(시뮬레이션 없음)으로 나갑니다.
+   **Settings → Environments → Production → Branch Tracking**을 `master`로 바꾼 뒤, `master`에 새 커밋을
+   push하면(빈 커밋도 됨: `git commit --allow-empty -m "deploy" && git push origin master`) 시뮬레이션이 배포됩니다.
+5. 나온 `https://<프로젝트>.vercel.app` 링크를 공유합니다. 이후 `master`에 push하면 자동으로 다시 배포됩니다.
+
+- 함수는 서울 리전(`icn1`)에서 실행되고, 결과를 3분(`s-maxage=180`) 동안 CDN이 재사용해 data.go.kr 일일 호출 한도를 지킵니다.
+  바꾸려면 환경변수 `EGEN_CACHE_SEC`.
+- `.vercelignore`로 페이지와 API만 올립니다(PDF·엑셀·원본 데이터는 공개 주소에 올라가지 않음).
+- 배포판은 조회 원본(`raw/egen_*.json`)을 저장하지 않습니다. 기록이 필요하면 로컬 서버(위 방법)로 여세요.
+
 ### 이전 판
 
 `index.html`을 더블클릭해서 브라우저로 열면 됩니다. 로컬 서버 없이 바로 동작합니다

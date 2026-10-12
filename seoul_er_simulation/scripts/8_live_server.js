@@ -28,12 +28,13 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+// 조회·파싱은 Vercel 배포판(api/egen-live.js)과 같은 코드를 쓴다
+const { normalizeKey, fetchEgenSeoul } = require('../../api/_lib/egen');
 
 const ROOT = path.join(__dirname, '..');
 const HTML = path.resolve(ROOT, process.argv[2] || path.join('..', 'seoul_er_dispatch_map_9.html'));
 const PORT = Number(process.env.PORT) || 8787;
 const OUT_DIR = path.join(ROOT, 'data', 'bed_snapshots', 'raw');
-const BASE = process.env.EGEN_BASE_URL || 'https://apis.data.go.kr/B552657/ErmctInfoInqireService/getEmrrmRltmUsefulSckbdInfoInqire';
 const CACHE_MS = 60 * 1000;
 
 // 키는 ① 환경변수 EGEN_SERVICE_KEY, 없으면 ② seoul_er_simulation/.env.local 의
@@ -47,39 +48,7 @@ function readEnvLocal() {
 }
 
 function getKey() {
-  const k = (process.env.EGEN_SERVICE_KEY || readEnvLocal()).trim();
-  if (!k) return null;
-  return /%[0-9A-Fa-f]{2}/.test(k) ? k : encodeURIComponent(k);
-}
-
-// 7b_fetch_egen_realtime.js 와 같은 파서
-function parseItems(xml) {
-  const code = (xml.match(/<resultCode>([^<]*)<\/resultCode>/) || [])[1];
-  const msg = (xml.match(/<resultMsg>([^<]*)<\/resultMsg>/) || [])[1];
-  if (code !== '00') {
-    throw new Error(`API 오류 resultCode=${code} resultMsg=${msg} · 응답 앞부분: ${xml.slice(0, 200)}`);
-  }
-  const total = Number((xml.match(/<totalCount>(\d+)<\/totalCount>/) || [])[1] || 0);
-  const items = [];
-  const re = /<item>([\s\S]*?)<\/item>/g;
-  let m;
-  while ((m = re.exec(xml))) {
-    const it = {};
-    const tre = /<([A-Za-z0-9_]+)>([^<]*)<\/\1>/g;
-    let t;
-    while ((t = tre.exec(m[1]))) it[t[1]] = t[2].trim();
-    items.push(it);
-  }
-  return { total, items };
-}
-
-function kstStamp(d) {
-  const pad = (n) => String(n).padStart(2, '0');
-  const k = new Date(d.getTime() + 9 * 3600 * 1000);
-  return {
-    iso: k.toISOString().replace('Z', '+09:00'),
-    file: `${k.getUTCFullYear()}${pad(k.getUTCMonth() + 1)}${pad(k.getUTCDate())}_${pad(k.getUTCHours())}${pad(k.getUTCMinutes())}`,
-  };
+  return normalizeKey(process.env.EGEN_SERVICE_KEY || readEnvLocal());
 }
 
 let cache = null; // {at, body}
@@ -88,32 +57,7 @@ async function fetchEgen() {
   if (cache && Date.now() - cache.at < CACHE_MS) return Object.assign({}, cache.body, { cached: true });
   const key = getKey();
   if (!key) throw new Error('인증키가 없습니다. 서버 창을 닫고 "시뮬레이션_실행.bat"을 다시 실행해 키를 넣거나, seoul_er_simulation/.env.local 에 EGEN_SERVICE_KEY=... 를 넣으세요.');
-  const all = [];
-  let page = 1, total = Infinity;
-  while (all.length < total && page <= 5) {
-    const url = `${BASE}?serviceKey=${key}&STAGE1=${encodeURIComponent('서울특별시')}&pageNo=${page}&numOfRows=100`;
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 15000);
-    let res, xml;
-    try {
-      res = await fetch(url, { signal: ctrl.signal });
-      xml = await res.text();
-    } finally { clearTimeout(timer); }
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${xml.slice(0, 200)}`);
-    const r = parseItems(xml);
-    total = r.total;
-    all.push(...r.items);
-    if (r.items.length === 0) break;
-    page++;
-  }
-  const st = kstStamp(new Date());
-  const body = {
-    source: 'egen_realtime',
-    operation: 'getEmrrmRltmUsefulSckbdInfoInqire',
-    fetchedAtKST: st.iso,
-    totalCount: total,
-    items: all,
-  };
+  const { body, stamp: st } = await fetchEgenSeoul(key);
   let savedAs = null;
   try {
     fs.mkdirSync(OUT_DIR, { recursive: true });

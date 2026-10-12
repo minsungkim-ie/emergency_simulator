@@ -1,0 +1,6 @@
+# Vercel에는 시뮬레이션 페이지와 API 함수만 올린다.
+# (저장소의 PDF·엑셀·원본 데이터가 공개 주소로 노출되지 않게)
+/*
+!/api
+!/seoul_er_dispatch_map_9.html
+!/vercel.json

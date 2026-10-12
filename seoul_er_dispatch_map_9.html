@@ -4942,6 +4942,7 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
   // 그 상태로 초기화한다. 페이지를 열 때 한 번 자동 조회. 조회가 실패하면 가장 최근 고정 스냅샷
   // (bed_snapshots.data.js)으로 시작하므로 시연은 계속 된다.
   //  - 조회는 항상 로컬 서버(scripts/8_live_server.js, 폴더의 "시뮬레이션_실행.bat")의 /api/egen-live 로 한다.
+  //    웹 배포판(Vercel)은 같은 주소의 /api/egen-live(api/egen-live.js)를 부른다.
   //    http://localhost:8787 로 열었으면 같은 서버, 파일을 직접 열었으면(file://) http://localhost:8787 을 부른다.
   //    인증키는 서버(.env.local)에만 있고 이 페이지에는 오지 않는다.
   // 필드 매핑은 7c_build_bed_snapshots.py 의 EGEN_FIELD_MAP 과 같아야 한다(바꾸면 둘 다 바꿀 것).
@@ -5007,7 +5008,8 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
         return j;
       });
     }, function(){
-      throw new Error('로컬 서버가 꺼져 있습니다. 폴더의 "시뮬레이션_실행.bat"을 더블클릭해 여세요');
+      throw new Error(LIVE_SERVER ? '로컬 서버가 꺼져 있습니다. 폴더의 "시뮬레이션_실행.bat"을 더블클릭해 여세요'
+                                  : '병상 서버에 연결하지 못했습니다');
     });
   }
   function liveAddSnapshot(snap){
