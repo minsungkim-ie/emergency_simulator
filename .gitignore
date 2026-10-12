@@ -5,3 +5,7 @@
 
 # Backup
 _backup/
+
+# API keys (local only)
+.env
+.env.*
