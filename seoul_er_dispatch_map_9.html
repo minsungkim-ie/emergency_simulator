@@ -9,16 +9,16 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0B0F17;
-    --panel:#121826;
-    --panel-2:#0F1420;
-    --border:#232B3D;
-    --text:#E7ECF3;
-    --text-dim:#8B94A7;
-    --accent:#3ABEEA;
-    --ok:#4ADE80;
-    --busy:#FBBF24;
-    --full:#F87171;
+    --bg:#F3F5F8;
+    --panel:#FFFFFF;
+    --panel-2:#F8FAFC;
+    --border:#E2E8F0;
+    --text:#0F172A;
+    --text-dim:#64748B;
+    --accent:#2563EB;
+    --ok:#16A34A;
+    --busy:#F59E0B;
+    --full:#DC2626;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;}
@@ -29,11 +29,11 @@
   .titleblock{margin-right:8px;}
   .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   button,select{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;cursor:pointer;}
-  button:hover{background:#1A2233;}
+  button:hover{background:#EEF2F7;}
   select{padding:6px 8px;}
   .live-readout{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-dim);white-space:nowrap;}
   main{flex:1;display:flex;min-height:0;}
-  #map{flex:1;min-width:0;background:#0B0F17;}
+  #map{flex:1;min-width:0;background:#F3F5F8;}
   .sidebar{width:340px;flex-shrink:0;border-left:1px solid var(--border);background:var(--panel);display:flex;flex-direction:column;overflow:hidden;}
   .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;}
   .stat-card{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
@@ -50,10 +50,10 @@
   .hospital-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);flex-shrink:0;}
   .hospital-specs{font-size:10.5px;color:var(--text-dim);margin-top:2px;}
   .hospital-resource{font-size:10px;color:var(--text-dim);margin-top:4px;font-family:'IBM Plex Mono',monospace;}
-  .hospital-bar-track{height:4px;background:#1B2333;border-radius:2px;margin-top:6px;overflow:hidden;}
+  .hospital-bar-track{height:4px;background:#E5E9F0;border-radius:2px;margin-top:6px;overflow:hidden;}
   .hospital-bar-fill{height:100%;transition:width .3s;background:var(--ok);}
   .event-log{flex:1;overflow-y:auto;padding:10px 14px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);min-height:0;}
-  .event-log div{padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+  .event-log div{padding:3px 0;border-bottom:1px solid rgba(15,23,42,0.04);}
   footer{padding:8px 16px;font-size:10.5px;color:var(--text-dim);border-top:1px solid var(--border);background:var(--panel-2);}
   .leaflet-tooltip{background:var(--panel);color:var(--text);border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:10.5px;box-shadow:none;}
   .leaflet-tooltip-top:before{border-top-color:var(--border);}
@@ -61,13 +61,13 @@
   .leaflet-popup-tip{background:var(--panel);}
 
   /* ===== 12차 UI 개편 (2026-10-12) ===== */
-  :root{ --icu:#A78BFA; --wait:#8B94A7; --contact:#FBBF24; --transit:#3ABEEA; --fail:#F87171; }
+  :root{ --icu:#7C3AED; --wait:#64748B; --contact:#F59E0B; --transit:#2563EB; --fail:#DC2626; }
   header{gap:18px;padding:10px 18px;flex-wrap:nowrap;}
   .titleblock{min-width:0;flex:0 1 auto;max-width:380px;}
   header .subtitle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:help;}
   .controls{flex-wrap:nowrap;}
-  .btn-primary{background:var(--accent);border-color:var(--accent);color:#06121A;font-weight:600;min-width:84px;}
-  .btn-primary:hover{background:#5CCDF0;}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600;min-width:84px;}
+  .btn-primary:hover{background:#1D4ED8;}
   .btn-primary.is-playing{background:transparent;color:var(--accent);}
   .scenario-wrap{position:relative;}
   #scenarioBtn{display:inline-flex;align-items:center;gap:8px;}
@@ -102,9 +102,9 @@
   .kpi .stat-label{margin-bottom:2px;}
   .kpi .stat-value{font-size:24px;line-height:1.15;}
   .kpi .kpi-sub{font-size:10.5px;color:var(--text-dim);margin:3px 0 0;font-family:'IBM Plex Mono',monospace;}
-  .kpi.alert{border-color:rgba(248,113,113,.55);}
+  .kpi.alert{border-color:rgba(220,38,38,.55);}
   .kpi.alert .stat-value{color:var(--fail);}
-  .kpi-bar{height:4px;background:#1B2333;border-radius:2px;margin-top:6px;overflow:hidden;}
+  .kpi-bar{height:4px;background:#E5E9F0;border-radius:2px;margin-top:6px;overflow:hidden;}
   .kpi-bar > div{height:100%;width:0%;background:var(--ok);transition:width .3s,background .3s;}
   .sub-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 14px 10px;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
   .sub-stat{padding:7px 10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-width:0;}
@@ -123,7 +123,7 @@
   .sidebar > .hospital-list{flex:1 1 0;max-height:none;min-height:130px;}
   .sidebar > .event-log{flex:1 1 0;min-height:130px;overflow-y:auto;}
   .reject-label{pointer-events:none;}
-  .reject-label span{display:inline-block;transform:translate(-50%,-100%);white-space:nowrap;background:rgba(127,29,29,.92);border:1px solid #F87171;color:#FEE2E2;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;padding:2px 7px;border-radius:5px;animation:rejUp 1.4s ease-out forwards;}
+  .reject-label span{display:inline-block;transform:translate(-50%,-100%);white-space:nowrap;background:rgba(127,29,29,.92);border:1px solid #DC2626;color:#FEE2E2;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;padding:2px 7px;border-radius:5px;animation:rejUp 1.4s ease-out forwards;}
   @keyframes rejUp{0%{opacity:0;margin-top:4px;}12%{opacity:1;margin-top:0;}70%{opacity:1;}100%{opacity:0;margin-top:-10px;}}
   footer{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
   footer.expanded{white-space:normal;}
@@ -131,6 +131,18 @@
   .live-status.ok{color:var(--ok);} .live-status.err{color:var(--fail);} .live-status.busy{color:var(--contact);}
   #liveFetchBtn{flex:1;}
   #liveFetchBtn:disabled{opacity:.55;cursor:wait;}
+
+  /* ===== 13차: 카카오맵 오버레이 + 밝은 테마 ===== */
+  .kl-pt{position:relative;width:0;height:0;}
+  .kl-dot{position:absolute;left:0;top:0;transform:translate(-50%,-50%);border-radius:50%;box-sizing:border-box;cursor:pointer;transition:opacity .2s;}
+  .kl-tip,.kl-pop{position:absolute;left:0;transform:translateX(-50%);background:#fff;color:#0F172A;border:1px solid #E2E8F0;border-radius:8px;box-shadow:0 4px 14px rgba(15,23,42,.18);white-space:nowrap;z-index:5;}
+  .kl-tip{padding:4px 8px;font-family:'IBM Plex Mono','Pretendard',monospace;font-size:11px;pointer-events:none;}
+  .kl-pop{padding:9px 12px;font-size:12px;line-height:1.55;white-space:nowrap;cursor:auto;}
+  .kl-tip:after,.kl-pop:after{content:'';position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(45deg);width:9px;height:9px;background:#fff;border-right:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;}
+  header,.statusbar{box-shadow:0 1px 0 rgba(15,23,42,.02);}
+  .kpi,.chart-box,.sub-stats,.stat-card{box-shadow:0 1px 2px rgba(15,23,42,.04);}
+  .btn-primary.is-playing{background:#fff;}
+  .scenario-panel{box-shadow:0 12px 32px rgba(15,23,42,.16);}
   @media (max-width:1180px){ .titleblock .subtitle{display:none;} .map-hint{display:none;} }
 </style>
 </head>
@@ -186,9 +198,9 @@
     <span class="sep"></span>
     <span class="mode-badge">배정 방식 <b id="modeBadge">순차 탐색</b></span>
     <span class="map-hint">
-      <svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="#FBBF24" stroke-width="2" stroke-dasharray="4,3"/></svg>문의 중인 병원
-      <svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="#3ABEEA" stroke-width="3"/></svg>이송 경로
-      <span style="display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid #F87171"></span>문의 거절
+      <svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4,3"/></svg>문의 중인 병원
+      <svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="#2563EB" stroke-width="3"/></svg>이송 경로
+      <span style="display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid #DC2626"></span>문의 거절
     </span>
   </div>
   <main>
@@ -210,20 +222,20 @@
       </div>
       <div class="charts">
         <div class="chart-box">
-          <div class="chart-head"><span>가동률 추이 (%)</span><span class="legend"><span><i style="background:#3ABEEA"></i>응급실</span><span><i style="background:#A78BFA"></i>ICU</span></span></div>
+          <div class="chart-head"><span>가동률 추이 (%)</span><span class="legend"><span><i style="background:#2563EB"></i>응급실</span><span><i style="background:#7C3AED"></i>ICU</span></span></div>
           <canvas id="chartOcc"></canvas>
         </div>
         <div class="chart-box">
-          <div class="chart-head"><span>병목 추이 (명)</span><span class="legend"><span><i style="background:#FBBF24"></i>대기·문의 중</span><span><i style="background:#F87171"></i>구간별 실패</span></span></div>
+          <div class="chart-head"><span>병목 추이 (명)</span><span class="legend"><span><i style="background:#F59E0B"></i>대기·문의 중</span><span><i style="background:#DC2626"></i>구간별 실패</span></span></div>
           <canvas id="chartQueue"></canvas>
         </div>
       </div>
       <p class="section-label">
         <span>응급실 현황 (51)</span>
         <span class="legend">
-          <span><i style="background:#4ADE80"></i>여유</span>
-          <span><i style="background:#FBBF24"></i>혼잡</span>
-          <span><i style="background:#F87171"></i>만실</span>
+          <span><i style="background:#16A34A"></i>여유</span>
+          <span><i style="background:#F59E0B"></i>혼잡</span>
+          <span><i style="background:#DC2626"></i>만실</span>
         </span>
       </p>
       <div class="hospital-list" id="hospitalList"></div>
@@ -236,6 +248,182 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- 13차: 카카오맵 SDK (JavaScript 키 — Kakao Developers에 등록한 도메인에서만 동작). 못 불러오면 Leaflet으로 자동 대체 -->
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=2408d804202808108aea5bf25c69b108"></script>
+<script>
+// ============================================================
+// 13차 — 카카오맵 어댑터 (2026-10-14)
+// 시뮬레이션 코드는 Leaflet(L.*) 문법으로 지도를 그린다. 카카오맵 SDK가 정상으로 로드되면
+// 여기서 그 일부(map, circleMarker, polyline, marker+divIcon, tooltip, popup)를 카카오맵 위에
+// 똑같이 흉내 내는 L 객체로 바꿔 끼운다. 그래서 배정·환자 발생 코드는 한 줄도 바뀌지 않는다.
+// SDK를 못 불러오면(등록 안 된 도메인, file://로 열기, 오프라인) 원래 Leaflet을 그대로 쓴다.
+// 카카오 JavaScript 키는 Kakao Developers에 등록한 도메인에서만 동작하므로 HTML에 들어가도 된다.
+// ============================================================
+(function(){
+  var K = window.kakao && window.kakao.maps;
+  window.MAP_ENGINE = (K && typeof K.Map === 'function') ? 'kakao' : 'leaflet';
+  if(window.MAP_ENGINE !== 'kakao') return;
+
+  var kmap = null;
+  var openPopup = null;
+
+  function toLL(ll){
+    if(ll instanceof K.LatLng) return ll;
+    if(Array.isArray(ll)) return new K.LatLng(ll[0], ll[1]);
+    return new K.LatLng(ll.lat, ll.lng);
+  }
+  function fromLL(k){ return {lat:k.getLat(), lng:k.getLng()}; }
+  function closePopup(){
+    if(openPopup){ openPopup._popEl.style.display = 'none'; openPopup._raise(false); openPopup = null; }
+  }
+
+  // ---------- 원형 마커 (픽셀 반지름 고정, Leaflet circleMarker와 같음) ----------
+  function CircleMarker(ll, o){
+    this.o = Object.assign({radius:10, color:'#3388ff', weight:3, opacity:1, fill:true, fillColor:null, fillOpacity:0.2, interactive:true}, o);
+    this._ll = toLL(ll);
+    var root = document.createElement('div'); root.className = 'kl-pt';
+    var dot = document.createElement('div'); dot.className = 'kl-dot';
+    root.appendChild(dot);
+    this._root = root; this._dot = dot;
+    this._z = 3;
+    this._ov = new K.CustomOverlay({position:this._ll, content:root, xAnchor:0, yAnchor:0, zIndex:this._z, clickable:this.o.interactive !== false});
+    if(this.o.interactive === false) root.style.pointerEvents = 'none';
+    this._handlers = {};
+    this._draw();
+    var self = this;
+    dot.addEventListener('mouseenter', function(){
+      if(!self._tipEl) return;
+      self._hover = true; self._raise(true);
+      (self._handlers.tooltipopen||[]).forEach(function(f){ f(); });
+      self._tipEl.style.display = 'block';
+    });
+    dot.addEventListener('mouseleave', function(){
+      if(!self._tipEl) return;
+      self._hover = false; self._tipEl.style.display = 'none';
+      if(openPopup !== self) self._raise(false);
+    });
+    dot.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(!self._popEl) return;
+      if(openPopup === self){ closePopup(); return; }
+      closePopup();
+      self._popEl.style.display = 'block'; self._raise(true); openPopup = self;
+    });
+  }
+  CircleMarker.prototype._draw = function(){
+    var o = this.o, d = this._dot, r = o.radius;
+    d.style.width = d.style.height = (2*r)+'px';
+    if(o.fill === false){
+      d.style.background = 'transparent';
+      d.style.border = o.weight+'px solid '+o.color;
+      d.style.boxShadow = 'none';
+      d.style.opacity = o.opacity;
+    } else {
+      d.style.background = o.fillColor || o.color;
+      d.style.border = '0';
+      d.style.boxShadow = '0 0 0 '+Math.max(1.5, o.weight)+'px #fff, 0 1px 4px rgba(15,23,42,.35)';
+      d.style.opacity = Math.min(1, o.fillOpacity/0.9);
+    }
+    if(this._tipEl) this._tipEl.style.bottom = (r+8)+'px';
+    if(this._popEl) this._popEl.style.bottom = (r+10)+'px';
+  };
+  CircleMarker.prototype._raise = function(on){ this._ov.setZIndex(on ? 60 : this._z); };
+  CircleMarker.prototype.addTo = function(){ this._ov.setMap(kmap); return this; };
+  CircleMarker.prototype.remove = function(){ if(openPopup === this) closePopup(); this._ov.setMap(null); return this; };
+  CircleMarker.prototype.setStyle = function(s){ for(var k in s) this.o[k] = s[k]; this._draw(); return this; };
+  CircleMarker.prototype.setRadius = function(r){ this.o.radius = r; this._draw(); return this; };
+  CircleMarker.prototype.setLatLng = function(ll){ this._ll = toLL(ll); this._ov.setPosition(this._ll); return this; };
+  CircleMarker.prototype.getLatLng = function(){ return fromLL(this._ll); };
+  CircleMarker.prototype.bindTooltip = function(html){
+    var t = document.createElement('div'); t.className = 'kl-tip'; t.innerHTML = html || '';
+    t.style.display = 'none'; this._root.appendChild(t); this._tipEl = t; this._draw(); return this;
+  };
+  CircleMarker.prototype.setTooltipContent = function(html){ if(this._tipEl && this._tipEl.innerHTML !== html) this._tipEl.innerHTML = html; return this; };
+  CircleMarker.prototype.isTooltipOpen = function(){ return !!this._hover; };
+  CircleMarker.prototype.getTooltip = function(){ return {setLatLng:function(){}}; };
+  CircleMarker.prototype.bindPopup = function(html){
+    var p = document.createElement('div'); p.className = 'kl-pop'; p.innerHTML = html || '';
+    p.style.display = 'none'; p.addEventListener('click', function(e){ e.stopPropagation(); });
+    this._root.appendChild(p); this._popEl = p; this._draw(); return this;
+  };
+  CircleMarker.prototype.setPopupContent = function(html){ if(this._popEl) this._popEl.innerHTML = html; return this; };
+  CircleMarker.prototype.on = function(ev, f){ (this._handlers[ev] = this._handlers[ev] || []).push(f); return this; };
+
+  // ---------- 선 (이송 경로, 문의 점선) ----------
+  function dashStyle(d){
+    if(!d) return 'solid';
+    var a = String(d).split(',').map(Number);
+    return a[0] <= 4 ? 'shortdash' : 'dash';
+  }
+  function Polyline(pts, o){
+    this.o = Object.assign({color:'#3388ff', weight:3, opacity:1}, o);
+    this._pl = new K.Polyline({
+      path: pts.map(toLL), strokeWeight: this.o.weight, strokeColor: this.o.color,
+      strokeOpacity: this.o.opacity, strokeStyle: dashStyle(this.o.dashArray), zIndex: 2
+    });
+  }
+  Polyline.prototype.addTo = function(){ this._pl.setMap(kmap); return this; };
+  Polyline.prototype.remove = function(){ this._pl.setMap(null); return this; };
+  Polyline.prototype.setLatLngs = function(p){ this._pl.setPath(p.map(toLL)); return this; };
+  Polyline.prototype.bringToBack = function(){ this._pl.setZIndex(1); return this; };
+  Polyline.prototype.setStyle = function(s){
+    var m = {};
+    if(s.color) m.strokeColor = s.color;
+    if(s.weight) m.strokeWeight = s.weight;
+    if(s.opacity !== undefined) m.strokeOpacity = s.opacity;
+    this._pl.setOptions(m); return this;
+  };
+
+  // ---------- divIcon 마커 (거절 라벨) ----------
+  function DivMarker(ll, o){
+    var root = document.createElement('div'); root.className = 'kl-pt ' + ((o.icon && o.icon.className) || '');
+    root.innerHTML = (o.icon && o.icon.html) || '';
+    root.style.pointerEvents = 'none';
+    this._ov = new K.CustomOverlay({position:toLL(ll), content:root, xAnchor:0, yAnchor:0, zIndex: 10 + ((o.zIndexOffset||0) > 0 ? 40 : 0)});
+  }
+  DivMarker.prototype.addTo = function(){ this._ov.setMap(kmap); return this; };
+  DivMarker.prototype.remove = function(){ this._ov.setMap(null); return this; };
+
+  // ---------- 지도 ----------
+  function leafletZoomToLevel(z){ return Math.max(1, Math.min(14, 20 - z)); }
+  var api = {
+    map: function(id){
+      var el = document.getElementById(id);
+      kmap = new K.Map(el, {center: new K.LatLng(37.5665, 126.9780), level: 8});
+      kmap.addControl(new K.ZoomControl(), K.ControlPosition.RIGHT);
+      K.event.addListener(kmap, 'click', closePopup);
+      // 창 크기가 바뀌면(처음 열 때 지도 칸이 작았던 경우 포함) 사용자가 직접 움직이지 않은 한 서울 전체로 다시 맞춘다
+      var lastFit = null, userMoved = false;
+      K.event.addListener(kmap, 'dragstart', function(){ userMoved = true; });
+      el.addEventListener('wheel', function(){ userMoved = true; }, {passive:true});
+      function applyFit(){ if(lastFit) kmap.setBounds(lastFit.b, lastFit.p, lastFit.p, lastFit.p, lastFit.p); }
+      var m = {
+        _k: kmap,
+        setView: function(c, z){ kmap.setCenter(toLL(c)); if(z) kmap.setLevel(leafletZoomToLevel(z)); return m; },
+        fitBounds: function(b, opt){
+          var p = (opt && opt.padding) ? opt.padding[0] : 40;
+          var kb = new K.LatLngBounds();
+          b._pts.forEach(function(ll){ kb.extend(toLL(ll)); });
+          lastFit = {b:kb, p:p}; userMoved = false;
+          applyFit();
+          return m;
+        },
+        removeLayer: function(l){ if(l && l.remove) l.remove(); return m; },
+        invalidateSize: function(){ kmap.relayout(); if(!userMoved) applyFit(); return m; }
+      };
+      return m;
+    },
+    tileLayer: function(){ return {addTo:function(){ return this; }}; },
+    circleMarker: function(ll, o){ return new CircleMarker(ll, o); },
+    polyline: function(p, o){ return new Polyline(p, o); },
+    marker: function(ll, o){ return new DivMarker(ll, o); },
+    divIcon: function(o){ return o; },
+    latLngBounds: function(pts){ return {_pts: pts}; }
+  };
+  window.L_LEAFLET = window.L;
+  window.L = api;
+})();
+</script>
 <script>
 // 환자 발생 확률표 (10차 초안) — scripts/6_build_patient_probabilities.py 생성
 // 출처·실측/가정 구분은 patient_probabilities.json 및 문서 참고
@@ -3676,13 +3864,13 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
   var SPEED_LEVELS = [20, 45, 90, 180, 360, 900, 1800, 3600];
   var DEFAULT_SPEED_INDEX = 2;
 
-  var COLOR_WAITING = '#8B94A7';
-  var COLOR_REQUEST = '#FBBF24'; // 2026-09-28, 9차: CONTACTING(순차 문의 중) 상태 마커 색으로 사용. 이전까지는 정의만 되고 실제로 쓰이진 않던 상수였음.
-  var COLOR_TRANSIT = '#3ABEEA';
-  var COLOR_FAILED = '#F87171';
-  var COLOR_OK = '#4ADE80';
-  var COLOR_BUSY = '#FBBF24';
-  var COLOR_FULL = '#F87171';
+  var COLOR_WAITING = '#64748B';
+  var COLOR_REQUEST = '#F59E0B'; // 2026-09-28, 9차: CONTACTING(순차 문의 중) 상태 마커 색으로 사용. 이전까지는 정의만 되고 실제로 쓰이진 않던 상수였음.
+  var COLOR_TRANSIT = '#2563EB';
+  var COLOR_FAILED = '#DC2626';
+  var COLOR_OK = '#16A34A';
+  var COLOR_BUSY = '#F59E0B';
+  var COLOR_FULL = '#DC2626';
 
   function rand(a,b){ return a + Math.random()*(b-a); }
 
@@ -3756,16 +3944,10 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
   }
 
   var map = L.map('map', {zoomControl:true}).setView([37.5665,126.9780], 11);
-  // CARTO의 무료 다크 타일(basemaps.cartocdn.com)은 2026년부터 API 키가 필요해져서
-  // 키 없이 쓰면 타일에 "API KEY REQUIRED" 워터마크가 찍힌다. 대신 키가 필요 없는
-  // Esri의 다크 캔버스 타일(World_Dark_Gray_Base + Reference 레이어)을 사용한다.
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-    maxNativeZoom: 16,
-    maxZoom: 19
-  }).addTo(map);
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
-    maxNativeZoom: 16,
+  // 13차: 기본은 카카오맵(위 어댑터). 카카오를 못 불러올 때만 이 Leaflet 타일이 쓰인다 —
+  // 화면이 밝은 테마로 바뀌어 다크 타일(Esri) 대신 키가 필요 없는 OpenStreetMap 표준 타일을 쓴다.
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 19
   }).addTo(map);
 
@@ -4850,14 +5032,14 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
     // 가로 격자 + y축 눈금
     [0, 0.5, 1].forEach(function(f){
       var y = Y(yMax*f);
-      ctx.strokeStyle = f===0 ? '#2A3347' : 'rgba(255,255,255,0.06)';
+      ctx.strokeStyle = f===0 ? '#CBD5E1' : 'rgba(15,23,42,0.06)';
       ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(L0, Math.round(y)+0.5); ctx.lineTo(L0+pw, Math.round(y)+0.5); ctx.stroke();
-      ctx.fillStyle = '#6B7488'; ctx.textAlign = 'right';
+      ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'right';
       ctx.fillText(String(Math.round(yMax*f)), L0-5, y);
     });
     // x축 시각 라벨 (시작 · 중간 · 현재)
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#6B7488';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#94A3B8';
     [t0, (t0+t1)/2, t1].forEach(function(t, i){
       ctx.textAlign = i===0 ? 'left' : (i===2 ? 'right' : 'center');
       ctx.fillText(clockText(t), i===0 ? L0 : (i===2 ? L0+pw : X(t)), c.h-2);
@@ -4866,7 +5048,7 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
     uiBursts.forEach(function(bt){
       if(bt < t0) return;
       var x = Math.round(X(bt))+0.5;
-      ctx.strokeStyle = 'rgba(248,113,113,0.5)'; ctx.setLineDash([2,3]);
+      ctx.strokeStyle = 'rgba(220,38,38,0.5)'; ctx.setLineDash([2,3]);
       ctx.beginPath(); ctx.moveTo(x, T0); ctx.lineTo(x, T0+ph); ctx.stroke();
       ctx.setLineDash([]);
     });
@@ -4903,15 +5085,15 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
   function uiDrawCharts(){
     if(!uiChartOcc || !uiChartQueue) return;
     uiDrawChart(uiChartOcc, [
-      {key:'icu', color:'#A78BFA', current:function(){ return uiOccupancy().icu; }},
-      {key:'er',  color:'#3ABEEA', current:function(){ return uiOccupancy().er; }}
+      {key:'icu', color:'#7C3AED', current:function(){ return uiOccupancy().icu; }},
+      {key:'er',  color:'#2563EB', current:function(){ return uiOccupancy().er; }}
     ], 100, {fmt:function(v){ return Math.round(v)+'%'; }});
     var qMax = 0;
     uiSamples.forEach(function(d){ qMax = Math.max(qMax, d.q, d.f); });
     var qNow = uiQueueCount();
     uiDrawChart(uiChartQueue, [
-      {key:'f', color:'rgba(248,113,113,0.75)', bar:true},
-      {key:'q', color:'#FBBF24', current:function(){ return qNow; }}
+      {key:'f', color:'rgba(220,38,38,0.75)', bar:true},
+      {key:'q', color:'#F59E0B', current:function(){ return qNow; }}
     ], uiNiceMax(Math.max(qMax, qNow)), {fmt:function(v){ return v < 10 ? v.toFixed(1).replace(/\.0$/,'') : String(Math.round(v)); }});
   }
 
