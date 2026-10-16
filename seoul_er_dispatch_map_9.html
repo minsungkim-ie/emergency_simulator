@@ -143,6 +143,12 @@
   .kpi,.chart-box,.sub-stats,.stat-card{box-shadow:0 1px 2px rgba(15,23,42,.04);}
   .btn-primary.is-playing{background:#fff;}
   .scenario-panel{box-shadow:0 12px 32px rgba(15,23,42,.16);}
+
+  /* ===== 20차: 카카오 지도 흑백 (지도 그림에만 적용, 마커·경로는 그대로) ===== */
+  #map.kakao-gray img{filter:grayscale(1) contrast(.95) brightness(1.03);}
+  /* ===== 18차: 배경 지도 선택 ===== */
+  .basemap-sel{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-dim);}
+  .basemap-sel select{padding:3px 8px;font-size:11.5px;border-radius:999px;background:var(--panel-2);}
   @media (max-width:1180px){ .titleblock .subtitle{display:none;} .map-hint{display:none;} }
 </style>
 </head>
@@ -197,6 +203,7 @@
     <span class="chip" title="수술 중인 환자 (시작 시점 기존 환자 포함)"><i style="background:var(--icu)"></i>수술 <b id="chipSurgery">0</b></span>
     <span class="sep"></span>
     <span class="mode-badge">배정 방식 <b id="modeBadge">순차 탐색</b></span>
+    <label class="basemap-sel" title="바꾸면 페이지를 새로고침합니다(시뮬레이션은 처음부터)">배경 지도 <select id="basemapSel"><option value="ofm">컬러 도로 (OpenFreeMap)</option><option value="esri">도로만 (Esri)</option><option value="kakao">카카오 지도 (컬러)</option><option value="kakaogray">카카오 지도 (흑백)</option></select></label>
     <span class="map-hint">
       <svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4,3"/></svg>문의 중인 병원
       <svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="#2563EB" stroke-width="3"/></svg>이송 경로
@@ -249,7 +256,24 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <!-- 13차: 카카오맵 SDK (JavaScript 키 — Kakao Developers에 등록한 도메인에서만 동작). 못 불러오면 Leaflet으로 자동 대체 -->
-<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=2408d804202808108aea5bf25c69b108"></script>
+<script>
+// 20차: 배경 지도 4종 — 'ofm'(기본, OpenFreeMap 컬러 도로 중심) / 'esri'(글자 없는 회색 도로 지도) /
+// 'kakao'(카카오 지도 컬러) / 'kakaogray'(카카오 지도 흑백). 화면의 "배경 지도" 선택칸이나 주소 ?map=… 로 바꾼다.
+(function(){
+  var ok = {esri:1, ofm:1, kakao:1, kakaogray:1};
+  var pref = 'ofm';
+  try{ var saved = localStorage.getItem('erSimBasemap'); if(saved === 'roads') saved = 'ofm'; if(ok[saved]) pref = saved; }catch(e){}
+  var q = /[?&]map=(esri|ofm|kakaogray|kakao)\b/.exec(location.search); if(q) pref = q[1];
+  window.BASEMAP_PREF = pref;
+  if(pref === 'kakao' || pref === 'kakaogray'){
+    document.write('<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=2408d804202808108aea5bf25c69b108"><\/script>');
+  } else if(pref === 'ofm'){
+    document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">');
+    document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"><\/script>');
+    document.write('<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.3/leaflet-maplibre-gl.js"><\/script>');
+  }
+})();
+</script>
 <script>
 // ============================================================
 // 13차 — 카카오맵 어댑터 (2026-10-14)
@@ -262,7 +286,25 @@
 (function(){
   var K = window.kakao && window.kakao.maps;
   window.MAP_ENGINE = (K && typeof K.Map === 'function') ? 'kakao' : 'leaflet';
-  if(window.MAP_ENGINE !== 'kakao') return;
+  if(window.MAP_ENGINE !== 'kakao'){
+    // 18차: Leaflet(도로만 지도)에서도 카카오 모드처럼 채워진 원은 흰 테두리로 그린다
+    if(window.L && L.circleMarker){
+      var origCM = L.circleMarker;
+      var adapt = function(o){
+        if(!o) return o;
+        var r = {}; for(var k in o) r[k] = o[k];
+        if(r.fill !== false && r.color && r.color !== '#fff'){ r.fillColor = r.fillColor || r.color; r.color = '#fff'; if(r.weight === undefined || r.weight < 1.5) r.weight = 1.5; }
+        return r;
+      };
+      L.circleMarker = function(ll, o){
+        var filled = !(o && o.fill === false);
+        var m = origCM(ll, adapt(o)), ss = m.setStyle;
+        m.setStyle = function(st){ return ss.call(m, (st && st.color && filled) ? adapt(st) : st); };
+        return m;
+      };
+    }
+    return;
+  }
 
   var kmap = null;
   var openPopup = null;
@@ -4100,12 +4142,45 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
   }
 
   var map = L.map('map', {zoomControl:true}).setView([37.5665,126.9780], 11);
-  // 13차: 기본은 카카오맵(위 어댑터). 카카오를 못 불러올 때만 이 Leaflet 타일이 쓰인다 —
-  // 화면이 밝은 테마로 바뀌어 다크 타일(Esri) 대신 키가 필요 없는 OpenStreetMap 표준 타일을 쓴다.
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 19
-  }).addTo(map);
+  // 20차: 배경 지도는 선택칸(BASEMAP_PREF)에 따라 —
+  //  'esri': Esri Canvas/World_Light_Gray_Base, 글자·지하철 없는 회색 도로 지도(키 불필요)
+  //  'ofm'(기본): OpenFreeMap 'liberty' 벡터 지도에서 글자·지하철·철도·경계선을 빼고 큰길만 연한 노랑/주황으로 칠한 컬러 도로 지도
+  //         (MapLibre를 못 쓰면 Esri로 대체)
+  //  'kakao' / 'kakaogray': 위 어댑터가 카카오맵을 쓰고 아래는 무시된다(흑백은 #map.kakao-gray CSS 필터)
+  function addFallbackTiles(){
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
+      maxNativeZoom: 16, maxZoom: 19
+    }).addTo(map);
+  }
+  function simplifyBaseStyle(st){
+    var hide = /path_pedestrian|service_track|one_way|hatching|boundary/;
+    st.layers = st.layers.filter(function(l){
+      return l.type !== 'symbol' && l.type !== 'fill-extrusion' && !/rail/.test(l.id) && l.id !== 'natural_earth';
+    });
+    st.layers.forEach(function(l){
+      if(hide.test(l.id)){ l.layout = l.layout || {}; l.layout.visibility = 'none'; return; }
+      if(l.type !== 'line') return;
+      var casing = /casing/.test(l.id), c = null;
+      if(/motorway/.test(l.id)) c = casing ? '#e3b47a' : '#fbd38d';
+      else if(/trunk_primary/.test(l.id)) c = casing ? '#e8cf9a' : '#fde9b0';
+      else if(/secondary_tertiary/.test(l.id)) c = casing ? '#e6dcc4' : '#fff8e1';
+      else if(/minor|street|link/.test(l.id)) c = casing ? '#e2e5ea' : '#ffffff';
+      if(c){ l.paint = l.paint || {}; l.paint['line-color'] = c; }
+    });
+    return st;
+  }
+  if(window.MAP_ENGINE !== 'kakao'){
+    if(window.BASEMAP_PREF === 'ofm' && window.maplibregl && L.maplibreGL && (!maplibregl.supported || maplibregl.supported())){
+      fetch('https://tiles.openfreemap.org/styles/liberty').then(function(r){ return r.json(); }).then(function(st){
+        L.maplibreGL({
+          style: simplifyBaseStyle(st),
+          attribution: '&copy; <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> &copy; OpenMapTiles &copy; OpenStreetMap contributors'
+        }).addTo(map);
+        window.BASEMAP_ACTIVE = 'openfreemap';
+      }).catch(function(e){ console.warn('[배경 지도] OpenFreeMap 실패 — Esri 회색 지도로 대체', e); addFallbackTiles(); window.BASEMAP_ACTIVE = 'esri'; });
+    } else { addFallbackTiles(); window.BASEMAP_ACTIVE = 'esri'; }
+  }
 
   var hospitals = HOSPITALS_DATA.map(function(h){
     var radius = Math.max(4, Math.min(11, 3 + h.capacity*0.55));
@@ -5411,6 +5486,20 @@ window.BED_SNAPSHOTS = [{"id": "egen_20261007_1503", "source": "egen_realtime", 
     setTimeout(liveLoad, 0);
   })();
 
+  // 18·20차: 배경 지도 선택칸 (바꾸면 새로고침 — 지도 엔진이 달라서 시뮬레이션은 처음부터)
+  (function(){
+    var sel = document.getElementById('basemapSel'); if(!sel) return;
+    var pref = window.BASEMAP_PREF || 'ofm';
+    sel.value = pref;
+    var m = document.getElementById('map');
+    if(pref === 'kakaogray' && window.MAP_ENGINE === 'kakao' && m) m.classList.add('kakao-gray');
+    if((pref === 'kakao' || pref === 'kakaogray') && window.MAP_ENGINE !== 'kakao') sel.title = '카카오 지도를 불러오지 못해 Esri 도로 지도로 표시 중입니다(등록되지 않은 주소이거나 오프라인)';
+    sel.addEventListener('change', function(){
+      try{ localStorage.setItem('erSimBasemap', sel.value); }catch(e){}
+      var u = location.href.replace(/([?&])map=[a-z]+&?/, '$1').replace(/[?&]$/, '');
+      location.href = u + (u.indexOf('?') >= 0 ? '&' : '?') + 'map=' + sel.value;
+    });
+  })();
   window.addEventListener('resize', function(){ map.invalidateSize(); uiChartsDirty = true; });
 
   // 2026-10-07, 10차 — 검증·발표 자료용 상태 조회(콘솔에서 SIM_DEBUG.getState()). 시뮬레이션 동작에는 영향 없음.
