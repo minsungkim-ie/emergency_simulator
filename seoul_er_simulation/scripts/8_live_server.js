@@ -12,7 +12,9 @@
 //   macOS/Linux:         EGEN_SERVICE_KEY="<일반 인증키(Encoding)>" node scripts/8_live_server.js
 //   → 브라우저에서 http://localhost:8787 을 연다 (열면 자동으로 한 번 불러옴).
 //
-//   다른 HTML을 띄우려면:  node scripts/8_live_server.js ../seoul_er_dispatch_map_9.html
+//   기본으로 띄우는 HTML: 저장소 루트에서 번호가 가장 큰 seoul_er_dispatch_map_<숫자>.html
+//     (이름이 정확히 그 형식인 것만, 번호는 숫자로 비교 — Vercel 배포와 같은 규칙, scripts/pick_latest_map.js)
+//   다른 HTML을 띄우려면:  node scripts/8_live_server.js ../seoul_er_dispatch_map_8.html
 //   포트 바꾸기:            $env:PORT="9000"
 //
 // 동작
@@ -30,9 +32,11 @@ const fs = require('fs');
 const path = require('path');
 // 조회·파싱은 Vercel 배포판(api/egen-live.js)과 같은 코드를 쓴다
 const { normalizeKey, fetchEgenSeoul } = require('../../api/_lib/egen');
+// HTML을 지정하지 않으면 배포와 같은 규칙으로 번호가 가장 큰 파일을 고른다
+const { findLatestMap } = require('../../scripts/pick_latest_map');
 
 const ROOT = path.join(__dirname, '..');
-const HTML = path.resolve(ROOT, process.argv[2] || path.join('..', 'seoul_er_dispatch_map_9.html'));
+const HTML = process.argv[2] ? path.resolve(ROOT, process.argv[2]) : findLatestMap();
 const PORT = Number(process.env.PORT) || 8787;
 const OUT_DIR = path.join(ROOT, 'data', 'bed_snapshots', 'raw');
 const CACHE_MS = 60 * 1000;
@@ -106,8 +110,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-if (!fs.existsSync(HTML)) {
-  console.error(`HTML 파일이 없습니다: ${HTML}\n  node scripts/8_live_server.js <HTML 경로> 로 지정하세요.`);
+if (!HTML || !fs.existsSync(HTML)) {
+  console.error(`HTML 파일이 없습니다: ${HTML || '저장소 루트에 seoul_er_dispatch_map_<숫자>.html 없음'}\n  node scripts/8_live_server.js <HTML 경로> 로 지정하세요.`);
   process.exit(1);
 }
 // 키가 없고 터미널에서 실행했으면(팀원 PC에서 처음 실행 등) 한 번 물어보고 .env.local 에 저장한다.
@@ -131,6 +135,7 @@ function askKeyIfMissing() {
 
 askKeyIfMissing().then(() => server.listen(PORT, '127.0.0.1', () => {
   console.log(`시뮬레이션: http://localhost:${PORT}  (${path.relative(process.cwd(), HTML)})`);
+  console.log(`띄운 파일: ${path.basename(HTML)}${process.argv[2] ? ' (인자로 지정)' : ' (번호가 가장 큰 파일 자동 선택)'}`);
   console.log(getKey() ? '인증키 확인됨 — 화면을 열면 실시간 병상을 불러옵니다.' : '주의: 인증키(.env.local 또는 EGEN_SERVICE_KEY)가 없어 실시간 조회는 실패합니다(고정 스냅샷은 그대로 사용 가능).');
   console.log('끝내려면 Ctrl+C');
   // 시뮬레이션_실행.bat 이 OPEN_BROWSER=1 을 주면 서버가 뜬 뒤 브라우저를 연다

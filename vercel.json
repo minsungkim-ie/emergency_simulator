@@ -1,8 +1,7 @@
 {
   "regions": ["icn1"],
-  "rewrites": [
-    { "source": "/", "destination": "/seoul_er_dispatch_map_9.html" }
-  ],
+  "buildCommand": "node scripts/pick_latest_map.js",
+  "outputDirectory": "public",
   "functions": {
     "api/egen-live.js": { "maxDuration": 30 }
   }

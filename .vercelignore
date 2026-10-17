@@ -1,6 +1,8 @@
 # Vercel에는 시뮬레이션 페이지와 API 함수만 올린다.
 # (저장소의 PDF·엑셀·원본 데이터가 공개 주소로 노출되지 않게)
+# 빌드(scripts/pick_latest_map.js)가 번호가 가장 큰 seoul_er_dispatch_map_<숫자>.html 을 public/index.html 로 복사한다.
 /*
 !/api
-!/seoul_er_dispatch_map_9.html
+!/scripts
+!/seoul_er_dispatch_map_*.html
 !/vercel.json

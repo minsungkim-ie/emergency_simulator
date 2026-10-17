@@ -9,3 +9,6 @@ _backup/
 # API keys (local only)
 .env
 .env.*
+
+# Vercel build output (scripts/pick_latest_map.js)
+public/
