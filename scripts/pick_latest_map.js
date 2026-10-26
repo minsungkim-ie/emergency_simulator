@@ -1,4 +1,4 @@
-// Vercel 빌드 단계: 저장소 루트에서 번호가 가장 큰 seoul_er_dispatch_map_<숫자>.html 을 골라
+// Vercel 빌드 단계: 저장소 루트와 html/ 폴더에서 번호가 가장 큰 seoul_er_dispatch_map_<숫자>.html 을 골라
 // public/index.html 로 복사한다. 새 판(_11, _12 …)을 올리기만 하면 그 판이 배포된다.
 //
 // 규칙
@@ -15,15 +15,20 @@ const REPO_ROOT = path.join(__dirname, '..');
 const MAP_RE = /^seoul_er_dispatch_map_(\d+)\.html$/;
 
 // 가장 큰 번호 파일의 절대 경로를 돌려준다. 없으면 null.
-function findLatestMap(dir = REPO_ROOT) {
+// dir 을 주면 그 폴더만, 안 주면 저장소 루트와 html/ 를 함께 본다(번호가 같으면 html/ 쪽 우선).
+function findLatestMap(dir) {
+  const dirs = dir ? [dir] : [REPO_ROOT, path.join(REPO_ROOT, 'html')];
   let best = null;
-  for (const name of fs.readdirSync(dir)) {
-    const m = name.match(MAP_RE);
-    if (!m) continue;
-    const n = Number(m[1]);
-    if (!best || n > best.n) best = { n, name };
+  for (const d of dirs) {
+    if (!fs.existsSync(d)) continue;
+    for (const name of fs.readdirSync(d)) {
+      const m = name.match(MAP_RE);
+      if (!m) continue;
+      const n = Number(m[1]);
+      if (!best || n >= best.n) best = { n, file: path.join(d, name) };
+    }
   }
-  return best ? path.join(dir, best.name) : null;
+  return best ? best.file : null;
 }
 
 module.exports = { findLatestMap };
@@ -31,7 +36,7 @@ module.exports = { findLatestMap };
 if (require.main === module) {
   const src = findLatestMap();
   if (!src) {
-    console.error(`오류: ${REPO_ROOT} 에 seoul_er_dispatch_map_<숫자>.html 파일이 없습니다.`);
+    console.error(`오류: ${REPO_ROOT} 또는 html/ 에 seoul_er_dispatch_map_<숫자>.html 파일이 없습니다.`);
     process.exit(1);
   }
   const outDir = path.join(REPO_ROOT, 'public');

@@ -1,8 +1,13 @@
 # Vercel에는 시뮬레이션 페이지와 API 함수만 올린다.
 # (저장소의 PDF·엑셀·원본 데이터가 공개 주소로 노출되지 않게)
+# 시뮬레이터 HTML 은 루트 또는 html/ 에 둔다(_exp·_capture·_design 은 이름 규칙에 안 맞아 선택되지 않음).
+# 공개되는 것은 outputDirectory(public/)뿐이라 html/ 의 옛 판은 업로드만 될 뿐 주소로 열리지 않는다.
 # 빌드(scripts/pick_latest_map.js)가 번호가 가장 큰 seoul_er_dispatch_map_<숫자>.html 을 public/index.html 로 복사한다.
 /*
 !/api
 !/scripts
 !/seoul_er_dispatch_map_*.html
+!/html
+/html/*
+!/html/seoul_er_dispatch_map_*.html
 !/vercel.json
