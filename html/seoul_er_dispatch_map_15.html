@@ -4010,7 +4010,7 @@ window.SIM_DATA = {"HOSPITALS_DATA":[{"hpid":"A1100043","name":"강동경희대�
 'LNS·ALNS 탐색 예산 (화면 진행) ⇒ LNS·ALNS search budget (on screen)','시간 (시연 모드 · 기기 속도 영향) ⇒ Time (demo mode · depends on device)','반복 횟수 (재현성 모드) ⇒ Iterations (reproducible mode)','LNS·ALNS 반복 횟수 ⇒ LNS·ALNS iterations','LNS·ALNS 시간 한도(ms) ⇒ LNS·ALNS time limit (ms)',
 'KTAS1–2 발생 시 주기 기다리지 않고 즉시 결정 ⇒ Decide KTAS1–2 immediately instead of waiting for the period','상세 분석에서 연구·기준선 정책도 함께 실행 ⇒ Also run research · baseline policies in Analysis','상세 분석에서 혼잡·예측 고려 정책(ETA 중증 우선·ETA+혼잡·롤링 SA)도 함께 실행 ⇒ Also run congestion · forecast policies in Analysis',
 '수요 배율 (×, 비우면 시나리오 값) ⇒ Demand multiplier (×, blank = scenario)','ICU 가정 가동률(%) ⇒ Assumed ICU utilization (%)','시나리오 ⇒ Scenario','배경 지도 ⇒ Basemap','바꾸면 페이지를 새로고침합니다(시뮬레이션은 처음부터) ⇒ Changing reloads the page (simulation restarts)',
-'시작 병상 (저장 스냅샷 / 실시간 조회 선택) ⇒ Starting beds (saved snapshot / live)','실시간 병상 불러오기 (E-Gen, 로컬 서버 필요) ⇒ Load live beds (E-Gen, local server needed)','저장 스냅샷으로 되돌리기 ⇒ Back to saved snapshot','시작 병상: ⇒ Starting beds: ','저장 스냅샷 ⇒ Saved snapshot','빈 병상 ⇒ Empty beds','불러오기 실패: ⇒ Load failed — ',
+'시작 병상 (저장 스냅샷 / 실시간 조회 선택) ⇒ Starting beds (saved snapshot / live)','지금 병상 불러오기 ⇒ Load beds now','저장 스냅샷으로 되돌리기 ⇒ Back to saved snapshot','시작 병상: ⇒ Starting beds: ','저장 스냅샷 ⇒ Saved snapshot','빈 병상 ⇒ Empty beds','불러오기 실패 — ⇒ Load failed — ','잠시 후 다시 시도하세요 ⇒ Please try again shortly','고정 스냅샷으로 계속합니다 ⇒ continuing with the saved snapshot','병상 서버(/api/egen-live)에 연결하지 못했습니다 ⇒ Could not reach the bed server (/api/egen-live)',
 '내보내기 ⇒ Export','실험 JSON 저장 (설정·시드·데이터 버전·결과·결정별 단계·예산) ⇒ Save experiment JSON (settings · seed · data version · results · per-decision steps · budget)','요약 CSV 저장 (정책별 한 줄) ⇒ Save summary CSV (one row per policy)','이 결과 JSON 저장 ⇒ Save this result as JSON','이 결과 CSV 저장 ⇒ Save this result as CSV','저장했습니다 ⇒ Saved',
 '정책 정의 · 개발 출처 ⇒ Policy definitions · origin','정책별 비교 조건 ⇒ Comparison conditions per policy','목적함수 (일괄배정 · 15차 검증 값 그대로) ⇒ Objective (batch · values as validated in round 15)','자원 규칙 · 시간 · 데이터 가정 ⇒ Resource rules · time · data assumptions','자원 규칙 (모든 정책 동일) ⇒ Resource rules (same for all policies)','데이터 · 가정 ⇒ Data · assumptions',
 '표시 이름 ⇒ Display name','내부 ID ⇒ Internal ID','개발 출처 ⇒ Origin','거리 기준 ⇒ Distance basis','처리 순서 ⇒ Processing order','문의 지연 ⇒ Inquiry delay','중증 반영 ⇒ Severity weights','목적·해법 ⇒ Objective · solver','정책 ⇒ Policy','정책: ⇒ Policy: ',
@@ -5766,6 +5766,7 @@ window.SIM_DATA = {"HOSPITALS_DATA":[{"hpid":"A1100043","name":"강동경희대�
   });
 
   // ---------------- 실시간 병상 (선택) ----------------
+  var IS_WEB = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);   // 배포(Vercel) 주소
   var LIVE_SERVER = /^https?:$/.test(location.protocol) ? '' : 'http://localhost:8787';
   function liveNum(v){ var n = parseInt(v, 10); return (v === undefined || v === null || v === '' || isNaN(n)) ? null : n; }
   function liveBuildSnapshot(items, fetchedAtKST){
@@ -5801,7 +5802,7 @@ window.SIM_DATA = {"HOSPITALS_DATA":[{"hpid":"A1100043","name":"강동경희대�
                            function(){ throw new Error('병상 서버 응답이 JSON이 아닙니다(HTTP ' + r.status + ')'); });
     }, function(err){
       if(err && err.name === 'AbortError') throw new Error('15초 안에 응답 없음');
-      throw new Error(LIVE_SERVER ? '로컬 서버가 꺼져 있습니다. 폴더의 "시뮬레이션_실행.bat"을 더블클릭해 여세요' : '병상 서버(/api/egen-live)에 연결하지 못했습니다');
+      throw new Error(LIVE_SERVER ? '로컬 서버가 꺼져 있습니다. 폴더의 "시뮬레이션_실행.bat"을 더블클릭해 여세요' : '병상 서버(/api/egen-live)에 연결하지 못했습니다. 잠시 후 다시 시도하세요');
     }).then(function(j){ clearTimeout(to); return j; }, function(e){ clearTimeout(to); throw e; });
   }
   function liveLoad(){
@@ -5828,7 +5829,7 @@ window.SIM_DATA = {"HOSPITALS_DATA":[{"hpid":"A1100043","name":"강동경희대�
       if(c.unmatchedHospitals.length) console.info('[실시간 병상] 51곳 밖 병원(무시)', c.unmatchedHospitals);
       window.SIM_LAST_LIVE_SNAPSHOT = snap;   // 콘솔 확인용
     }).catch(function(e){
-      liveSetStatus('불러오기 실패: ' + String(e && e.message || e).replace(/\.\s*$/, '') + ' · 지금은 ' + (currentSnapshot ? currentSnapshot.label : '빈 병상') + ' 고정 스냅샷으로 시작한 상태입니다.', 'err');
+      liveSetStatus('불러오기 실패 — ' + String(e && e.message || e).replace(/\.\s*$/, '') + (IS_WEB ? ' · 잠시 후 다시 시도하세요. 지금은 ' : ' · 지금은 ') + (currentSnapshot ? currentSnapshot.label : '빈 병상') + ' 고정 스냅샷으로 계속합니다.', 'err');
     }).then(function(){ liveBusy = false; if(btn) btn.disabled = false; });
   }
   $('liveBtn').addEventListener('click', liveLoad);
@@ -6294,7 +6295,7 @@ window.SIM_DATA = {"HOSPITALS_DATA":[{"hpid":"A1100043","name":"강동경희대�
     } catch(e){ console.warn('[v2] 도로망 생성 실패, 발생 위치 도로 보정·경로 모양 없이 진행', e); roadnet = null; }
     resetAll();
     requestAnimationFrame(frame);
-    if(!qs.get('runTo') && qs.get('live') !== '0') liveLoad();   // map_9 12차: 페이지를 열 때 한 번 자동 조회
+    if(!qs.get('runTo') && qs.get('live') !== '0' && /^https?:$/.test(location.protocol)) liveLoad();   // 웹(http/https)에서만 페이지를 열 때 한 번 자동 조회, 파일로 열면 버튼으로만
   }, 30);
 })();
 
